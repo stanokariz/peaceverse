@@ -1,0 +1,23 @@
+@keyframes flashBrandColors {
+  0% { background-color: #0066FF; }   /* Blue */
+  25% { background-color: #00A65A; }  /* Green */
+  50% { background-color: #D4A017; }  /* Gold */
+  75% { background-color: #FF7A00; }  /* Orange */
+  100% { background-color: #0066FF; } /* Loop back to Blue */
+}
+
+.animate-flashBrand {
+  animation: flashBrandColors 4s linear infinite;
+}
+
+@keyframes flashBrandButtons {
+  0% { background-color: #0066FF; }  
+  25% { background-color: #00A65A; } 
+  50% { background-color: #D4A017; } 
+  75% { background-color: #FF7A00; } 
+  100% { background-color: #0066FF; }
+}
+
+.animate-flashBrandButton {
+  animation: flashBrandButtons 3s linear infinite;
+}

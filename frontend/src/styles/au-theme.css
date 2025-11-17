@@ -1,0 +1,21 @@
+:root {
+  --au-gold: #C9A635;
+  --au-green: #006A4E;
+  --au-blue: #0033A0;
+}
+
+.au-card {
+  background: linear-gradient(135deg, var(--au-green), var(--au-blue));
+  color: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+
+.au-heading {
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(to right, var(--au-gold), var(--au-green));
+  -webkit-background-clip: text;
+  color: transparent;
+}

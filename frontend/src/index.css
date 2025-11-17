@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* index.css */
+@import url('https://unpkg.com/leaflet/dist/leaflet.css');
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal white spaces */
+}
+
+body {
+  @apply bg-gray-900 font-inter;
+}
+@keyframes flashBorder {
+  0% { box-shadow: 0 0 4px #00f; }
+  25% { box-shadow: 0 0 6px #0f0; }
+  50% { box-shadow: 0 0 4px #ff0; }
+  75% { box-shadow: 0 0 6px #f80; }
+  100% { box-shadow: 0 0 4px #00f; }
+}
+
+@keyframes flashBorderFast {
+  0% { box-shadow: 0 0 5px #00f; }
+  20% { box-shadow: 0 0 7px #0f0; }
+  40% { box-shadow: 0 0 5px #ff0; }
+  60% { box-shadow: 0 0 7px #f80; }
+  80% { box-shadow: 0 0 5px #0ff; }
+  100% { box-shadow: 0 0 5px #00f; }
+}
+
+.animate-flashBorder {
+  animation: flashBorder 2.5s infinite linear;
+}
+.animate-flashBorderFast {
+  animation: flashBorderFast 1s infinite linear;
+}
+
