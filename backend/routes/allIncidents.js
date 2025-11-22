@@ -5,27 +5,9 @@ import { requireAuth } from "./../middleware/auth.js";
 
 const router = express.Router();
 
-
-// /**
-//  * GET /api/incidents/all
-//  * Query params:
-//  *  - page, limit
-//  *  - country, city, category, severity
-//  *  - verified = true|false
-//  *  - dateFrom, dateTo (ISO strings)
-//  *  - q (search in title/description)
-//  */
-
-// routes/incidentsAll.js (or inside your existing router)
-
-// --- GET ALL INCIDENTS (for admin/editor) ---
-router.get("/all", requireAuth, async (req, res) => {
+// --- GET ALL INCIDENTS (public, for PeaceRadio) ---
+router.get("/public", async (req, res) => {
   try {
-    // only editor/admin allowed
-    if (!["editor", "admin"].includes(req.user.role)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const {
       page = 1,
       limit = 20,
@@ -68,7 +50,6 @@ router.get("/all", requireAuth, async (req, res) => {
 
     const skip = (Math.max(1, Number(page)) - 1) * Number(limit);
 
-    // Ensure sortBy is valid
     const allowedSortFields = [
       "title",
       "createdAt",
@@ -79,7 +60,6 @@ router.get("/all", requireAuth, async (req, res) => {
       "isVerified",
     ];
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : "createdAt";
-
     const sortObj = {};
     sortObj[sortField] = sortDir === "asc" ? 1 : -1;
 
@@ -89,8 +69,6 @@ router.get("/all", requireAuth, async (req, res) => {
         .sort(sortObj)
         .skip(skip)
         .limit(Number(limit))
-        .populate("userId", "name email country city role")
-        .populate("verifiedBy", "name email role")
         .lean(),
     ]);
 
@@ -102,16 +80,12 @@ router.get("/all", requireAuth, async (req, res) => {
       incidents,
     });
   } catch (err) {
-    console.error("GET /api/incidents/all error:", err);
+    console.error("GET /api/incidents/all/public error:", err);
     res.status(500).json({ message: err.message });
   }
 });
 
-/**
- * PATCH /api/incidents/verify/:id
- * Body: { isVerified: true|false }
- * Sets isVerified and verifiedBy (req.user._id when verified; null when unverify)
- */
+
 router.patch("/verify/:id", requireAuth, async (req, res) => {
   try {
     if (!["editor", "admin"].includes(req.user.role)) {

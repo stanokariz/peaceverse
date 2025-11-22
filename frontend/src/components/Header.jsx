@@ -35,7 +35,7 @@ export const Header = () => {
   const links = [
     { name: "Home", to: "/" },
     { name: "About", to: "/about" },
-    { name: "Peace Radio", to: "/peace-radio" },
+    { name: "Peace Radio", to: "/radio" },
     { name: "Analytics", to: "/analytics" },
     { name: "Profile", to: "/profile", protected: true },
     { name: "Share Peace Story", to: "/peace-story", protected: true },

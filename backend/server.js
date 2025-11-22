@@ -1,4 +1,6 @@
-// server.js
+import "./utils/cleanupUnverifiedUsers.js";
+import ttsRoutes from "./routes/tts.js";
+import seedAdmin from "./seedAdmin.js";
 import "dotenv/config";
 import http from "http";
 import express from "express";
@@ -32,6 +34,7 @@ app.use(
   })
 );
 
+
 // 2) helmet AFTER CORS (to avoid blocking cookies)
 app.use(helmet({
     crossOriginOpenerPolicy: false,
@@ -44,13 +47,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: process.env.ORIGIN, // Strict origin
-    credentials: true,
-  })
-);
-
 // ------------------ API Routes ------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -60,6 +56,7 @@ app.use("/api/users", allUsers);
 app.use("/api/incidents/all", allIncidents);
 app.use("/api/incidents/heatmap", heatMapRoute);
 app.use("/api", analyticsRoute); // consistent prefix
+
 
 // ------------------ 404 Handler ------------------
 app.use((req, res) => {
@@ -78,12 +75,14 @@ initWebsocket(server);
 // ------------------ Database + Server Start ------------------
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log("✅ MongoDB connected");
 
     server.listen(PORT, () => {
       console.log(`🚀 Server with WebSocket running on port ${PORT}`);
     });
+     // Seed admin user
+    await seedAdmin();
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);

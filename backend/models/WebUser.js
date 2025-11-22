@@ -1,4 +1,3 @@
-// models/WebUser.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -17,7 +16,23 @@ const webUserSchema = new mongoose.Schema({
   isLoggedIn: { type: Boolean, default: false },
   lastLogin: Date,
   newPoints: { type: Number, default: 0 },
-}, { timestamps: true });
+}, 
+{
+  timestamps: true,
+});
+
+// --- TTL index for unverified users ---
+// MongoDB will automatically delete documents that match this filter after 30 minutes
+webUserSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 30 * 60, // 30 minutes
+    partialFilterExpression: {
+      isEmailVerified: false,
+      isPhoneVerified: false,
+    },
+  }
+);
 
 // Virtual for setting password
 webUserSchema.methods.setPassword = async function (plain) {
