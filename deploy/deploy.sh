@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-LOGFILE="/var/log/peaceverse-deploy.log"
+LOGFILE="/home/stanley/projects/peaceverse/deploy/peaceverse-deploy.log"
+
 echo "📌 Starting deployment... $(date)" | tee -a $LOGFILE
 
 # Navigate to project
