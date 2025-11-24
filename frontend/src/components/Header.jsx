@@ -61,6 +61,9 @@ export const Header = () => {
   const buttonClass =
     "px-3 py-1 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 transition-colors transform active:scale-95 flex items-center gap-2 text-sm";
 
+  const linkClass =
+    "relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans transition-colors duration-300 hover:text-yellow-400 group";
+
   return (
     <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg font-sans">
       {/* Logo */}
@@ -79,7 +82,7 @@ export const Header = () => {
             onClick={() =>
               link.protected ? handleProtectedLink(link) : navigate(link.to)
             }
-            className="relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans hover:text-yellow-400 transition-colors duration-300 group"
+            className={linkClass}
           >
             {link.name}
             <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
@@ -89,7 +92,7 @@ export const Header = () => {
         {/* Sun/Moon toggle */}
         <DarkModeToggle />
 
-        {/* Login / Logout with padlock */}
+        {/* Login / Logout */}
         {user ? (
           <button onClick={handleLogout} className={buttonClass}>
             <motion.svg
@@ -152,7 +155,7 @@ export const Header = () => {
                 setDrawerOpen(false);
                 link.protected ? handleProtectedLink(link) : navigate(link.to);
               }}
-              className="relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans hover:text-yellow-400 transition-colors duration-300 group"
+              className={linkClass + " py-2"}
             >
               {link.name}
               <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
