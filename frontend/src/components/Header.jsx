@@ -3,29 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { toast } from "react-hot-toast";
-import { Lock, Unlock } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const Header = () => {
   const { user, logout, setAuthModalOpen } = useAuth();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [lockFlipped, setLockFlipped] = useState(false); // For flip animation
+  const [locked, setLocked] = useState(true);
 
   const handleLogout = async () => {
-    setLockFlipped(true);
+    setLocked(false);
     const res = await logout();
     if (res?.ok) {
       toast.success("Logged out successfully");
       navigate("/");
     }
     setDrawerOpen(false);
-    setTimeout(() => setLockFlipped(false), 300); // Reset flip
+    setTimeout(() => setLocked(true), 300);
   };
 
   const handleLoginClick = () => {
-    setLockFlipped(true);
+    setLocked(true);
     setAuthModalOpen(true);
-    setTimeout(() => setLockFlipped(false), 300); // Reset flip
   };
 
   const handleProtectedLink = (link) => {
@@ -63,7 +62,7 @@ export const Header = () => {
     "px-3 py-1 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 transition-colors transform active:scale-95 flex items-center gap-2 text-sm";
 
   return (
-    <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg">
+    <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg font-sans">
       {/* Logo */}
       <div
         className="text-xl md:text-2xl font-bold text-white cursor-pointer flex items-center gap-2"
@@ -75,47 +74,64 @@ export const Header = () => {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex gap-4 items-center">
         {links.map((link) => (
-          <button
+          <div
             key={link.name}
             onClick={() =>
               link.protected ? handleProtectedLink(link) : navigate(link.to)
             }
-            className="text-white font-semibold px-3 py-1 rounded hover:bg-white/20 transition-colors text-sm"
+            className="relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans hover:text-yellow-400 transition-colors duration-300 group"
           >
             {link.name}
-          </button>
+            <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+          </div>
         ))}
 
         {/* Sun/Moon toggle */}
         <DarkModeToggle />
 
-        {/* Login / Logout Buttons with flipping padlock */}
+        {/* Login / Logout with padlock */}
         {user ? (
           <button onClick={handleLogout} className={buttonClass}>
-            <span
-              className={`transition-transform duration-300 ${
-                lockFlipped ? "rotate-y-180" : ""
-              }`}
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#275432"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={false}
+              animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
             >
-              <Unlock size={16} stroke="#275432" className="animate-pulse" />
-            </span>
+              <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
+            </motion.svg>
             Logout
           </button>
         ) : (
           <button onClick={handleLoginClick} className={buttonClass}>
-            <span
-              className={`transition-transform duration-300 ${
-                lockFlipped ? "rotate-y-180" : ""
-              }`}
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#275432"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={false}
+              animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
             >
-              <Lock size={16} stroke="#275432" className="animate-pulse" />
-            </span>
+              <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
+            </motion.svg>
             Login
           </button>
         )}
       </nav>
 
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu */}
       <div className="md:hidden flex items-center gap-2">
         <DarkModeToggle />
         <button
@@ -128,29 +144,38 @@ export const Header = () => {
 
       {/* Drawer */}
       {drawerOpen && (
-        <div className="absolute top-full left-0 w-full bg-[#074F98] dark:bg-[#074F98] p-4 flex flex-col gap-3 z-50 shadow-xl">
+        <div className="absolute top-full left-0 w-full bg-[#074F98] dark:bg-[#074F98] p-4 flex flex-col gap-2 z-50 shadow-xl">
           {links.map((link) => (
-            <button
+            <div
               key={link.name}
               onClick={() => {
                 setDrawerOpen(false);
                 link.protected ? handleProtectedLink(link) : navigate(link.to);
               }}
-              className="text-white font-medium text-left px-3 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm"
+              className="relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans hover:text-yellow-400 transition-colors duration-300 group"
             >
               {link.name}
-            </button>
+              <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+            </div>
           ))}
 
           {user ? (
             <button onClick={handleLogout} className={buttonClass + " mt-2"}>
-              <span
-                className={`transition-transform duration-300 ${
-                  lockFlipped ? "rotate-y-180" : ""
-                }`}
+              <motion.svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#275432"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={false}
+                animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
               >
-                <Unlock size={16} stroke="#275432" className="animate-pulse" />
-              </span>
+                <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
+              </motion.svg>
               Logout
             </button>
           ) : (
@@ -161,13 +186,21 @@ export const Header = () => {
               }}
               className={buttonClass + " mt-2"}
             >
-              <span
-                className={`transition-transform duration-300 ${
-                  lockFlipped ? "rotate-y-180" : ""
-                }`}
+              <motion.svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#275432"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={false}
+                animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
               >
-                <Lock size={16} stroke="#275432" className="animate-pulse" />
-              </span>
+                <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
+              </motion.svg>
               Login
             </button>
           )}
@@ -175,4 +208,12 @@ export const Header = () => {
       )}
     </header>
   );
+};
+
+// Padlock SVG paths
+const lockPaths = {
+  locked:
+    "M12 17h8a2 2 0 002-2v-5a2 2 0 00-2-2h-8a2 2 0 00-2 2v5a2 2 0 002 2z M16 9V7a4 4 0 10-8 0v2",
+  unlocked:
+    "M12 17h8a2 2 0 002-2v-5a2 2 0 00-2-2h-8a2 2 0 00-2 2v5a2 2 0 002 2z M16 9V7a4 4 0 10-4 4h4",
 };
