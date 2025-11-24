@@ -62,7 +62,7 @@ export const Header = () => {
     "px-3 py-1 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 transition-colors transform active:scale-95 flex items-center gap-2 text-sm";
 
   const linkClass =
-    "relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans transition-colors duration-300 hover:text-yellow-400 group";
+    "relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans transition-all duration-300 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_#FFD700] group";
 
   return (
     <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg font-sans">
