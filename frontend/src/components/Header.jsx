@@ -52,8 +52,7 @@ export const Header = () => {
   return (
     <header
       className="
-        bg-[#074F98]
-        dark:bg-[#074F98]
+        bg-[#074F98] dark:bg-[#074F98]
         p-3 md:p-2
         flex justify-between items-center relative shadow-lg
       "
@@ -80,9 +79,10 @@ export const Header = () => {
           </button>
         ))}
 
+        {/* Sun/Moon toggle */}
         <DarkModeToggle />
 
-        {/* Logout Button */}
+        {/* Logout/Login */}
         {user ? (
           <button
             onClick={handleLogout}
@@ -110,7 +110,7 @@ export const Header = () => {
         )}
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Button */}
       <div className="md:hidden flex items-center gap-2">
         <DarkModeToggle />
         <button
@@ -126,8 +126,7 @@ export const Header = () => {
         <div
           className="
             absolute top-full left-0 w-full
-            bg-[#074F98]
-            dark:bg-[#074F98]
+            bg-[#074F98] dark:bg-[#074F98]
             p-4 flex flex-col gap-3 z-50 shadow-xl
           "
         >
