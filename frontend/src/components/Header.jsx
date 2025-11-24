@@ -1,4 +1,3 @@
-// components/Header.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -53,9 +52,9 @@ export const Header = () => {
   return (
     <header
       className="
-        bg-gradient-to-r from-blue-500 via-green-400 to-yellow-300
-        dark:from-gray-700 dark:via-gray-900 dark:to-black
-        p-3 md:p-2     /* ⬅ smaller height on desktop */
+        bg-[#074F98]
+        dark:bg-[#074F98]
+        p-3 md:p-2
         flex justify-between items-center relative shadow-lg
       "
     >
@@ -83,7 +82,7 @@ export const Header = () => {
 
         <DarkModeToggle />
 
-        {/* Flashing Logout Button */}
+        {/* Logout Button */}
         {user ? (
           <button
             onClick={handleLogout}
@@ -97,7 +96,6 @@ export const Header = () => {
             Logout
           </button>
         ) : (
-          /* Flashing Login/Signup Button */
           <button
             onClick={() => setAuthModalOpen(true)}
             className="
@@ -112,7 +110,7 @@ export const Header = () => {
         )}
       </nav>
 
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu */}
       <div className="md:hidden flex items-center gap-2">
         <DarkModeToggle />
         <button
@@ -128,8 +126,8 @@ export const Header = () => {
         <div
           className="
             absolute top-full left-0 w-full
-            bg-gradient-to-b from-blue-500 via-green-400 to-yellow-300
-            dark:from-gray-700 dark:via-gray-900 dark:to-black
+            bg-[#074F98]
+            dark:bg-[#074F98]
             p-4 flex flex-col gap-3 z-50 shadow-xl
           "
         >
@@ -143,14 +141,13 @@ export const Header = () => {
               className="
                 text-white font-medium text-left px-3 py-2 rounded
                 bg-white/10 hover:bg-white/20 transition-colors
-                animate-flashBorderFast     /* ⬅ drawer links flash too */
+                animate-flashBorderFast
               "
             >
               {link.name}
             </button>
           ))}
 
-          {/* Flashing Logout/Login inside drawer */}
           {user ? (
             <button
               onClick={handleLogout}
