@@ -3,19 +3,29 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { toast } from "react-hot-toast";
+import { Lock, Unlock } from "lucide-react";
 
 export const Header = () => {
   const { user, logout, setAuthModalOpen } = useAuth();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [lockFlipped, setLockFlipped] = useState(false); // For flip animation
 
   const handleLogout = async () => {
+    setLockFlipped(true);
     const res = await logout();
     if (res?.ok) {
       toast.success("Logged out successfully");
       navigate("/");
     }
     setDrawerOpen(false);
+    setTimeout(() => setLockFlipped(false), 300); // Reset flip
+  };
+
+  const handleLoginClick = () => {
+    setLockFlipped(true);
+    setAuthModalOpen(true);
+    setTimeout(() => setLockFlipped(false), 300); // Reset flip
   };
 
   const handleProtectedLink = (link) => {
@@ -49,14 +59,11 @@ export const Header = () => {
     links.push({ name: "Admin", to: "/admin", protected: true, roles: ["admin"] });
   }
 
+  const buttonClass =
+    "px-3 py-1 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 transition-colors transform active:scale-95 flex items-center gap-2 text-sm";
+
   return (
-    <header
-      className="
-        bg-[#074F98] dark:bg-[#074F98]
-        p-3 md:p-2
-        flex justify-between items-center relative shadow-lg
-      "
-    >
+    <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg">
       {/* Logo */}
       <div
         className="text-xl md:text-2xl font-bold text-white cursor-pointer flex items-center gap-2"
@@ -73,7 +80,7 @@ export const Header = () => {
             onClick={() =>
               link.protected ? handleProtectedLink(link) : navigate(link.to)
             }
-            className="text-white font-semibold px-3 py-1 rounded hover:bg-white/20 transition-colors"
+            className="text-white font-semibold px-3 py-1 rounded hover:bg-white/20 transition-colors text-sm"
           >
             {link.name}
           </button>
@@ -82,30 +89,28 @@ export const Header = () => {
         {/* Sun/Moon toggle */}
         <DarkModeToggle />
 
-        {/* Logout/Login */}
+        {/* Login / Logout Buttons with flipping padlock */}
         {user ? (
-          <button
-            onClick={handleLogout}
-            className="
-              px-4 py-2 rounded-lg font-semibold text-white
-              bg-gradient-to-r from-red-500 via-orange-500 to-yellow-400
-              animate-flashBorderFast shadow-md
-              hover:scale-105 transition-transform
-            "
-          >
+          <button onClick={handleLogout} className={buttonClass}>
+            <span
+              className={`transition-transform duration-300 ${
+                lockFlipped ? "rotate-y-180" : ""
+              }`}
+            >
+              <Unlock size={16} stroke="#275432" className="animate-pulse" />
+            </span>
             Logout
           </button>
         ) : (
-          <button
-            onClick={() => setAuthModalOpen(true)}
-            className="
-              px-4 py-2 rounded-lg font-semibold text-blue-900
-              bg-gradient-to-r from-yellow-200 via-white to-blue-200
-              animate-flashBorderFast shadow-md
-              hover:scale-110 transition-transform
-            "
-          >
-            Login / Signup
+          <button onClick={handleLoginClick} className={buttonClass}>
+            <span
+              className={`transition-transform duration-300 ${
+                lockFlipped ? "rotate-y-180" : ""
+              }`}
+            >
+              <Lock size={16} stroke="#275432" className="animate-pulse" />
+            </span>
+            Login
           </button>
         )}
       </nav>
@@ -123,13 +128,7 @@ export const Header = () => {
 
       {/* Drawer */}
       {drawerOpen && (
-        <div
-          className="
-            absolute top-full left-0 w-full
-            bg-[#074F98] dark:bg-[#074F98]
-            p-4 flex flex-col gap-3 z-50 shadow-xl
-          "
-        >
+        <div className="absolute top-full left-0 w-full bg-[#074F98] dark:bg-[#074F98] p-4 flex flex-col gap-3 z-50 shadow-xl">
           {links.map((link) => (
             <button
               key={link.name}
@@ -137,40 +136,39 @@ export const Header = () => {
                 setDrawerOpen(false);
                 link.protected ? handleProtectedLink(link) : navigate(link.to);
               }}
-              className="
-                text-white font-medium text-left px-3 py-2 rounded
-                bg-white/10 hover:bg-white/20 transition-colors
-                animate-flashBorderFast
-              "
+              className="text-white font-medium text-left px-3 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm"
             >
               {link.name}
             </button>
           ))}
 
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="
-                bg-gradient-to-r from-red-500 via-orange-500 to-yellow-400
-                text-white px-4 py-2 rounded-lg mt-2 font-semibold
-                animate-flashBorderFast
-              "
-            >
+            <button onClick={handleLogout} className={buttonClass + " mt-2"}>
+              <span
+                className={`transition-transform duration-300 ${
+                  lockFlipped ? "rotate-y-180" : ""
+                }`}
+              >
+                <Unlock size={16} stroke="#275432" className="animate-pulse" />
+              </span>
               Logout
             </button>
           ) : (
             <button
               onClick={() => {
-                setAuthModalOpen(true);
+                handleLoginClick();
                 setDrawerOpen(false);
               }}
-              className="
-                bg-gradient-to-r from-yellow-200 via-white to-blue-200
-                text-blue-900 px-4 py-2 rounded-lg font-semibold mt-2
-                animate-flashBorderFast
-              "
+              className={buttonClass + " mt-2"}
             >
-              Login / Signup
+              <span
+                className={`transition-transform duration-300 ${
+                  lockFlipped ? "rotate-y-180" : ""
+                }`}
+              >
+                <Lock size={16} stroke="#275432" className="animate-pulse" />
+              </span>
+              Login
             </button>
           )}
         </div>
