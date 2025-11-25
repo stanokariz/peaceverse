@@ -1,70 +1,85 @@
 import { motion } from "framer-motion";
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
-const Footer = () => {
+export const Footer = () => {
+  const socialLinks = [
+    { icon: <FaFacebookF />, href: "https://www.facebook.com", label: "Facebook", color: "#4267B2" },
+    { icon: <FaTwitter />, href: "https://www.twitter.com", label: "Twitter", color: "#1DA1F2" },
+    { icon: <FaInstagram />, href: "https://www.instagram.com", label: "Instagram", color: "#C13584" },
+    { icon: <FaLinkedinIn />, href: "https://www.linkedin.com", label: "LinkedIn", color: "#0077B5" },
+    { icon: <FaWhatsapp />, href: "https://wa.me/1234567890", label: "WhatsApp", color: "#25D366" },
+  ];
+
   return (
     <motion.footer
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="
-        relative 
-        w-full 
-        py-2 sm:py-3 
-        text-center 
-        overflow-hidden 
-        bg-gradient-to-br from-blue-900 via-green-800 to-yellow-600
-        dark:from-[#0a0d12] dark:via-[#0b1a14] dark:to-[#0b101c]
-        text-gray-100 
-        backdrop-blur-md 
+        w-full
+        py-1
+        text-center
+        bg-[#074F98] dark:bg-[#275432]
+        text-gray-100
         border-t border-blue-700/20
-        m-0 p-0
+        font-sans
+        relative
       "
-      style={{ marginTop: 0 }}
     >
-      {/* Animated gradient glow overlay */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-blue-500 via-green-400 to-yellow-400 opacity-25 blur-2xl"
-        animate={{
-          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{
-          backgroundSize: "200% 200%",
-        }}
-      ></motion.div>
-
-      {/* Glass layer */}
-      <div className="absolute inset-0 bg-blue-950/40 dark:bg-blue-950/60 backdrop-blur-xl"></div>
-
       {/* Footer text */}
-      <div className="relative z-10 space-y-0.5">
-        <p className="text-sm sm:text-base font-semibold tracking-wide">
-          © {new Date().getFullYear()}{" "}
-          <span className="text-yellow-400 font-bold">Peaceverse</span> — Building a United Africa 🌍
+      <div className="space-y-0.5 mb-1">
+        <p className="text-xs font-semibold tracking-wide">
+          © {new Date().getFullYear()} <span className="text-yellow-400 font-bold">Peaceverse</span> — Building a United Africa 🌍
         </p>
-        <p className="text-[11px] sm:text-xs text-gray-300">
-          Promoting peace, good governance, and food security across COMESA
+        <p className="text-[9px] text-gray-300">
+          Promoting peace, good governance, and empowerment for African nations.
+        </p>
+        <p className="text-[9px] text-white-600">
+          Site built and maintained by <span className="text-beige-400 font-bold italic">Diamstan Technologies ltd</span>
         </p>
       </div>
 
-      {/* Subtle animated top edge glow */}
-      <motion.div
-        className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-green-400 to-yellow-400"
-        animate={{
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      ></motion.div>
+      {/* Social media icons */}
+      <div className="flex justify-center gap-1.5 mt-1 relative">
+        {socialLinks.map((link, index) => (
+          <motion.a
+            key={link.label}
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={link.label}
+            className="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-white dark:border-[#275432]"
+            whileHover={{ scale: 1.05 }}
+          >
+            {/* Outer glow */}
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              style={{ boxShadow: `0 0 0px ${link.color}` }}
+              whileHover={{ boxShadow: `0 0 6px ${link.color}, 0 0 12px ${link.color}` }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            ></motion.span>
+
+            {/* Shimmer */}
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: `radial-gradient(circle at -20% 50%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%)`,
+                boxShadow: `0 0 3px ${link.color}, 0 0 6px ${link.color}`,
+              }}
+              animate={{ backgroundPositionX: ["-20%", "120%"] }}
+              transition={{ duration: 2.5 + index * 0.2, repeat: Infinity, ease: "linear" }}
+            ></motion.span>
+
+            {/* Icon container */}
+            <span
+              className="relative z-10 flex items-center justify-center w-5 h-5 rounded-full text-sm"
+              style={{ backgroundColor: link.color, color: "#fff" }}
+            >
+              {link.icon}
+            </span>
+          </motion.a>
+        ))}
+      </div>
     </motion.footer>
   );
 };
-
-export default Footer;

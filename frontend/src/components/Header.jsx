@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { toast } from "react-hot-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import logo from "../assets/logo.png";
 
 export const Header = () => {
   const { user, logout, setAuthModalOpen } = useAuth();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [locked, setLocked] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Detect scroll to shrink header
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     setLocked(false);
@@ -59,164 +68,134 @@ export const Header = () => {
   }
 
   const buttonClass =
-    "px-3 py-1 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 transition-colors transform active:scale-95 flex items-center gap-2 text-sm";
+    "px-2 py-0.5 rounded-lg font-medium text-white bg-white/10 hover:bg-white/20 dark:bg-[#275432]/50 dark:hover:bg-[#275432]/70 transition-colors transform active:scale-95 flex items-center gap-1 text-xs";
 
   const linkClass =
-    "relative text-white text-sm font-light px-2 py-1 cursor-pointer font-sans transition-all duration-300 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_#FFD700] group";
+    "relative text-white text-xs font-light px-1 py-0.5 cursor-pointer font-sans transition-all duration-300 hover:text-yellow-400 hover:drop-shadow-[0_0_6px_#FFD700] group";
 
   return (
-    <header className="bg-[#074F98] dark:bg-[#074F98] p-3 md:p-2 flex justify-between items-center relative shadow-lg font-sans">
-      {/* Logo */}
-      <div
-        className="text-xl md:text-2xl font-bold text-white cursor-pointer flex items-center gap-2"
-        onClick={() => navigate("/")}
-      >
-        <span className="text-3xl">🌿</span> Peace-Verse
+    <header
+      className={`bg-[#074F98] dark:bg-[#275432] fixed top-0 left-0 w-full z-50
+    flex items-center shadow-md font-sans transition-all duration-300
+    ${scrolled ? "py-1" : "py-2"}`}
+    >
+      {/* Left: Logo */}
+      <div className="cursor-pointer flex items-center gap-1 ml-2 md:ml-4" onClick={() => navigate("/")}>
+        <img
+          src={logo}
+          alt="Peace-Verse Logo"
+          className={`object-contain transition-all duration-300 ${scrolled ? "h-6 md:h-7" : "h-7 md:h-8"}`}
+        />
+        <span className={`text-white font-bold transition-all duration-300 ${scrolled ? "text-sm md:text-base" : "text-base md:text-lg"}`}>
+          Peace-Verse
+        </span>
       </div>
 
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex gap-4 items-center">
+      {/* Center: Desktop Navigation */}
+      <nav className="hidden md:flex flex-1 justify-center gap-1.5 items-center">
         {links.map((link) => (
           <div
             key={link.name}
-            onClick={() =>
-              link.protected ? handleProtectedLink(link) : navigate(link.to)
-            }
-            className={linkClass}
+            onClick={() => (link.protected ? handleProtectedLink(link) : navigate(link.to))}
+            className={linkClass + " px-1 py-0.5 text-xs"}
           >
             {link.name}
-            <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute left-0 bottom-0 w-0 h-[1.5px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
           </div>
         ))}
+      </nav>
 
-        {/* Sun/Moon toggle */}
+      {/* Right: Dark Mode + Login */}
+      <div className="flex items-center gap-1 mr-10 md:mr-4">
         <DarkModeToggle />
 
-        {/* Login / Logout */}
         {user ? (
           <button onClick={handleLogout} className={buttonClass}>
-            <motion.svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#275432"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={false}
-              animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
-            >
-              <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
-            </motion.svg>
             Logout
           </button>
         ) : (
           <button onClick={handleLoginClick} className={buttonClass}>
-            <motion.svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#275432"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={false}
-              animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
-            >
-              <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
-            </motion.svg>
             Login
           </button>
         )}
-      </nav>
-
-      {/* Mobile Menu */}
-      <div className="md:hidden flex items-center gap-2">
-        <DarkModeToggle />
-        <button
-          onClick={() => setDrawerOpen(!drawerOpen)}
-          className="text-white text-2xl font-bold"
-        >
-          ☰
-        </button>
       </div>
 
-      {/* Drawer */}
-      {drawerOpen && (
-        <div className="absolute top-full left-0 w-full bg-[#074F98] dark:bg-[#074F98] p-4 flex flex-col gap-2 z-50 shadow-xl">
-          {links.map((link) => (
-            <div
-              key={link.name}
-              onClick={() => {
-                setDrawerOpen(false);
-                link.protected ? handleProtectedLink(link) : navigate(link.to);
-              }}
-              className={linkClass + " py-2"}
-            >
-              {link.name}
-              <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
-            </div>
-          ))}
+      {/* Drawer Toggle Button — Now Top Right */}
+      <motion.button
+        onClick={() => setDrawerOpen(!drawerOpen)}
+        animate={{ rotate: drawerOpen ? 90 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        className="md:hidden absolute top-2 right-3 text-white text-2xl font-bold z-50"
+      >
+        {drawerOpen ? "✕" : "☰"}
+      </motion.button>
 
-          {user ? (
-            <button onClick={handleLogout} className={buttonClass + " mt-2"}>
-              <motion.svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#275432"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                initial={false}
-                animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
-              >
-                <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
-              </motion.svg>
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                handleLoginClick();
-                setDrawerOpen(false);
+      {/* Drawer Slide-Down + Backdrop Blur */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            {/* Blur backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setDrawerOpen(false)}
+            />
+
+            {/* Slide-down drawer */}
+            <motion.div
+              key="drawer"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{
+                height: "auto",
+                opacity: 1,
               }}
-              className={buttonClass + " mt-2"}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 150,
+                damping: 15,
+              }}
+              className="absolute top-full left-0 w-full bg-[#074F98] dark:bg-[#275432]
+                         p-3 flex flex-col gap-2 shadow-xl z-50 md:hidden overflow-hidden"
             >
-              <motion.svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#275432"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                initial={false}
-                animate={{ d: locked ? lockPaths.locked : lockPaths.unlocked }}
-              >
-                <motion.path d={locked ? lockPaths.locked : lockPaths.unlocked} />
-              </motion.svg>
-              Login
-            </button>
-          )}
-        </div>
-      )}
+              {links.map((link) => (
+                <div
+                  key={link.name}
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    link.protected ? handleProtectedLink(link) : navigate(link.to);
+                  }}
+                  className={linkClass + " py-2 px-2 text-sm"}
+                >
+                  {link.name}
+                </div>
+              ))}
+
+              <div className="mt-2">
+                {user ? (
+                  <button onClick={handleLogout} className={buttonClass + " w-full py-1.5"}>
+                    Logout
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleLoginClick();
+                      setDrawerOpen(false);
+                    }}
+                    className={buttonClass + " w-full py-1.5"}
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
-};
-
-// Padlock SVG paths
-const lockPaths = {
-  locked:
-    "M12 17h8a2 2 0 002-2v-5a2 2 0 00-2-2h-8a2 2 0 00-2 2v5a2 2 0 002 2z M16 9V7a4 4 0 10-8 0v2",
-  unlocked:
-    "M12 17h8a2 2 0 002-2v-5a2 2 0 00-2-2h-8a2 2 0 00-2 2v5a2 2 0 002 2z M16 9V7a4 4 0 10-4 4h4",
 };

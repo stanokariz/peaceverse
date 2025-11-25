@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 import { AuthModal } from "./components/AuthModal";
 
 // Pages
@@ -19,7 +20,6 @@ import AllIncidents from "./pages/AllIncidents";
 import Admin from "./pages/Admin";
 import SharePeaceStory from "./pages/SharePeaceStory";
 import ReportIncident from "./pages/ReportIncident";
-// import Footer from "./components/Footer";
 
 function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -35,7 +35,8 @@ function App() {
 
         <Toaster position="top-right" />
 
-        <Routes>
+        <div className="pt-20">
+          <Routes>
           {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -93,9 +94,10 @@ function App() {
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </div>
 
         {/* Optional Footer */}
-        {/* <Footer /> */}
+        <Footer />
       </Router>
     </AuthProvider>
   );
