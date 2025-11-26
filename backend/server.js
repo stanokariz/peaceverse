@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { trackVisit } from "./middleware/trackVisits.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -20,6 +21,8 @@ import peaceStoryRoutes from "./routes/peaceStories.js";
 import incidentRoute from "./routes/incidentRoute.js";
 import heatMapRoute from "./routes/heatMapRoute.js";
 import analyticsRoute from "./routes/analytics.js";
+import adminRoute from "./routes/admin.js";
+
 
 import { initWebsocket } from "./utils/websocket.js";
 
@@ -56,6 +59,8 @@ app.use("/api/users", allUsers);
 app.use("/api/incidents/all", allIncidents);
 app.use("/api/incidents/heatmap", heatMapRoute);
 app.use("/api", analyticsRoute); // consistent prefix
+app.use("/api/admin", adminRoute);
+app.use(trackVisit); // tracks all API & site visits
 
 
 // ------------------ 404 Handler ------------------

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Linkedin, Twitter, Github } from "lucide-react";
 import stank from "../assets/stank.jpg";
+import brian from "../assets/brian.jpeg";
+import damian from "../assets/damian.jpeg";
 
 const About = () => {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -201,7 +203,7 @@ const TEAM = [
     name: "Damian Kajwang",
     role: "Project Team Lead",
     bio: "Championing Africa’s peace innovation and digital governance transformation.",
-    image: "https://randomuser.me/api/portraits/men/25.jpg",
+    image: damian,
   },
   {
     name: "Stanley Kariuki Kinuthia",
@@ -213,7 +215,7 @@ const TEAM = [
     name: "Brian Maingi K",
     role: "Graphic Designer",
     bio: "Crafting narratives that unite Africa around peace and shared prosperity.",
-    image: "https://randomuser.me/api/portraits/men/26.jpg",
+    image: brian,
   },
 ];
 

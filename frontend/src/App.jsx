@@ -43,7 +43,7 @@ function App() {
           <Route path="/radio" element={<PeaceRadio />} />
           <Route path="/incidents" element={<AllIncidents />} />
           <Route path="/analytics" element={<Analytics />} />
-          <Route path="/users" element={<Users />} />
+          {/* <Route path="/users" element={<Users />} /> */}
 
           {/* Protected pages */}
           <Route
@@ -87,6 +87,15 @@ function App() {
             element={
               <ProtectedRoute roles={["admin"]} setAuthModalOpen={setAuthModalOpen}>
                 <Admin />
+              </ProtectedRoute>
+            }
+          />
+
+           <Route
+            path="/users"
+            element={
+              <ProtectedRoute roles={["admin"]} setAuthModalOpen={setAuthModalOpen}>
+                <Users />
               </ProtectedRoute>
             }
           />

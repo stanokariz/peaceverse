@@ -15,9 +15,12 @@ const seedUsers = async () => {
       throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env");
     }
 
-    let admin = await WebUser.findOne({ email: adminEmail, role: "admin" });
+    // Look up ONLY by email
+    let admin = await WebUser.findOne({ email: adminEmail });
+
     if (!admin) {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
       admin = new WebUser({
         email: adminEmail,
         passwordHash: hashedPassword,
@@ -27,15 +30,23 @@ const seedUsers = async () => {
         isActive: true,
         phoneNumber: adminPhone,
       });
+
       await admin.save();
 
-      // Generate refresh token and store in Redis
+      // Generate refresh token for new admin
       const { refreshToken, jti } = generateTokens(admin);
       await redis.set(`refreshToken:${jti}`, admin._id.toString(), "EX", 7 * 86400);
 
-      console.log("✅ Admin seeded with refresh token");
+      console.log("✅ Admin created and seeded with refresh token");
     } else {
-      console.log("✅ Admin already exists");
+      // If admin exists but role differs → update it
+      if (admin.role !== "admin") {
+        admin.role = "admin";
+        await admin.save();
+        console.log("🔄 Existing admin found — role updated to admin");
+      } else {
+        console.log("✅ Admin already exists");
+      }
     }
 
     // ---------- EDITOR ----------
@@ -48,9 +59,12 @@ const seedUsers = async () => {
       return;
     }
 
-    let editor = await WebUser.findOne({ email: editorEmail, role: "editor" });
+    // Look up ONLY by email
+    let editor = await WebUser.findOne({ email: editorEmail });
+
     if (!editor) {
       const hashedPassword = await bcrypt.hash(editorPassword, 10);
+
       editor = new WebUser({
         email: editorEmail,
         passwordHash: hashedPassword,
@@ -60,19 +74,27 @@ const seedUsers = async () => {
         isActive: true,
         phoneNumber: editorPhone,
       });
+
       await editor.save();
 
-      // Generate refresh token and store in Redis
+      // Generate refresh token for new editor
       const { refreshToken, jti } = generateTokens(editor);
       await redis.set(`refreshToken:${jti}`, editor._id.toString(), "EX", 7 * 86400);
 
-      console.log("✅ Editor seeded with refresh token");
+      console.log("✅ Editor created and seeded with refresh token");
     } else {
-      console.log("✅ Editor already exists");
+      // If editor exists but role differs → update it
+      if (editor.role !== "editor") {
+        editor.role = "editor";
+        await editor.save();
+        console.log("🔄 Existing editor found — role updated to editor");
+      } else {
+        console.log("✅ Editor already exists");
+      }
     }
+
   } catch (err) {
     console.error("❌ User seeding error:", err);
-    // Optionally: send email alert in production
   }
 };
 

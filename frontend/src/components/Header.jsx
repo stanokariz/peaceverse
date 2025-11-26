@@ -60,11 +60,13 @@ export const Header = () => {
     { name: "Reports", to: "/incidents", protected: true },
   ];
 
+  
   if (user && ["editor", "admin"].includes(user.role)) {
     links.push({ name: "Editor", to: "/editor", protected: true, roles: ["editor", "admin"] });
   }
   if (user?.role === "admin") {
     links.push({ name: "Admin", to: "/admin", protected: true, roles: ["admin"] });
+    links.push({ name: "Users", to: "/users", protected: true, roles: ["admin"] });
   }
 
   const buttonClass =
