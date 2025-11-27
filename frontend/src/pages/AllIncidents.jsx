@@ -29,7 +29,7 @@ export default function AllIncidents() {
   const fetch = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/incidents/all/all", { params: filters });
+      const res = await api.get("/incidents/all/public", { params: filters });
       setIncidents(res.data.incidents || []);
       setTotalPages(res.data.pages || 1);
     } catch (err) {
