@@ -39,6 +39,7 @@ export default function AllIncidents() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetch();

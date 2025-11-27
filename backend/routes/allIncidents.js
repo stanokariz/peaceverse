@@ -6,7 +6,7 @@ import { requireAuth } from "./../middleware/auth.js";
 const router = express.Router();
 
 // --- GET ALL INCIDENTS (public, for PeaceRadio) ---
-router.get("/public", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const {
       page = 1,
