@@ -10,54 +10,61 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your repo
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up SSH key
-      - name: Set up SSH key
+      # 2️⃣ Setup SSH key
+      - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
-          # Write the RSA private key from GitHub Secrets
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # Add VPS host to known_hosts (prevents interactive prompt)
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      # 3️⃣ Test SSH connection
-      - name: Test SSH connection
-        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} "echo connected"
-
-      # 4️⃣ Deploy commands
-      - name: Deploy on VPS
+      # 3️⃣ Deploy to VPS
+      - name: Deploy to VPS
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
-            cd /home/stanley/projects/peaceverse
+            PROJECT_DIR="/home/stanley/projects/peaceverse"
+            BACKEND_DIR="$PROJECT_DIR/backend"
+            FRONTEND_DIR="$PROJECT_DIR/frontend"
 
-            echo "➡️ Pulling latest code..."
+            echo "🔧 Loading NVM..."
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            nvm use 20 || nvm install 20
+
+            echo "📥 Updating project..."
+            cd "$PROJECT_DIR"
             git reset --hard
             git pull origin main
 
-            echo "➡️ Installing backend dependencies..."
-            cd backend
-            npm install --silent
+            echo "📦 Installing backend dependencies..."
+            cd "$BACKEND_DIR"
+            npm ci --silent || npm install --silent
 
-            echo "➡️ Restarting backend with PM2..."
-            pm2 restart peaceverse || pm2 start server.js --name peaceverse
+            echo "🚀 Zero-downtime PM2 reload..."
+            if pm2 list | grep -q peaceverse; then
+                pm2 reload peaceverse --update-env
+            else
+                pm2 start server.js --name peaceverse
+            fi
 
-            echo "➡️ Building frontend..."
-            cd ../frontend
-            npm install --silent
+            echo "🌐 Building frontend..."
+            cd "$FRONTEND_DIR"
+            npm ci --silent || npm install --silent
             npm run build
 
-            echo "➡️ Reloading Nginx..."
+            echo "🔁 Reloading Nginx..."
             sudo nginx -t
             sudo systemctl reload nginx
 
-            echo "✅ Deployment complete!"
+            echo "🎉 Deployment complete!"
           EOF
