@@ -13,34 +13,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.8.2
-        with:
-          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-
-      - name: Deploy to VPS
+      - name: Set up SSH key
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+      - name: Deploy on VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
-            echo "➡️ Navigate to project"
+            echo "➡️ Navigating to project..."
             cd /home/stanley/projects/peaceverse
 
-            echo "➡️ Pull latest code"
+            echo "➡️ Pulling latest code..."
             git reset --hard
             git pull origin main
 
-            echo "➡️ Backend dependencies"
+            echo "➡️ Installing backend dependencies..."
             cd backend
             npm install --silent
 
-            echo "➡️ Restart backend with PM2"
+            echo "➡️ Restarting backend with PM2..."
             pm2 restart peaceverse || pm2 start server.js --name peaceverse
 
-            echo "➡️ Build frontend"
+            echo "➡️ Building frontend..."
             cd ../frontend
             npm install --silent
             npm run build
 
-            echo "➡️ Deployment complete!"
+            echo "➡️ Reloading Nginx..."
+            sudo nginx -t && sudo systemctl reload nginx
+
+            echo "✅ Deployment complete!"
           EOF
