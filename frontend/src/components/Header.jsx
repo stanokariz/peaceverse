@@ -54,7 +54,7 @@ export const Header = () => {
     { name: "About", to: "/about" },
     { name: "Peace Radio", to: "/radio" },
     { name: "Analytics", to: "/analytics" },
-    { name: "Profile", to: "/profile", protected: true },
+    { name: "Account", to: "/profile", protected: true },
     { name: "Share Peace Story", to: "/peace-story", protected: true },
     { name: "Report Incident", to: "/report-incident", protected: true },
     { name: "Reports", to: "/incidents", protected: true },
