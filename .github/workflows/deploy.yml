@@ -14,23 +14,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up SSH key manually
+      # 2️⃣ Set up SSH key
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+
+          # Write the RSA private key from GitHub Secrets
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Add VPS host to known_hosts (prevents interactive prompt)
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       # 3️⃣ Test SSH connection
       - name: Test SSH connection
-        run: ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} "echo connected"
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} "echo connected"
 
-      # 4️⃣ Deploy code
+      # 4️⃣ Deploy commands
       - name: Deploy on VPS
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no stanley@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
             cd /home/stanley/projects/peaceverse
